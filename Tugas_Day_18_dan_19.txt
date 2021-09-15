@@ -1,0 +1,117 @@
+1. Konsep:
+a. Sebutkan entities (sing.: entity) yang terdapat pada ERD terlampir!
+User : Song(FK), Username, Firstname, Lastname, Email, Password, SignUpDate, dan ProfilePic.
+Song : Genre(FK), Artist(FK), Album(FK), Title, Duration, Path, AlbumOrder, Plays.
+Artist : Name.
+Genre : Name.
+Album : Genre, Song, Artist, Title, ArtworkPath.
+
+b. Terdapat 6 relasi dalam ERD terlampir, sebutkan jenis relasi dari masing-masing relasi!
+User choose many Song, vice versa : Many to Many;
+Album created by Artist : One to Many;
+Artist prepare a Song : One to Many;
+Song corresponds to Genre : One to Many;
+Album consist of Genre : One to Many;
+Album contains many Song : One to Many.
+
+c. Dari 7 Foreign Key (FK), ada 1 FK yang tidak diperlukan. Pilih FK apa dan dari tabel mana dan sertakan alasanmu!
+Pada tabel Users terdapat SongID sebagai foreign key, menurut saya ini tidak perlu, karena Songid dan Userid akan di join di tabel penghubung.
+
+
+2. Tuliskan query SQL untuk mengimplementasikan desain atau ERD (Entity Relationship Diagram) terlampir!
+Perhatikan atribut-atribut, tipe data, dan relasi setiap tabel!
+Atribut yang tidak perlu:
+User: FirstName, LastName, Email, Password, SignUpDate, ProfilePic.
+Song: Duration, Path, AlbumOrder, Plays.
+Album: ArtworkPath.
+Ingat, many-to-many perlu tabel penghubung! (Jenis relasi berdasarkan garis penghubung bisa dilihat disini https://d2slcw3kip6qmk.cloudfront.net/marketing/pages/chart/erd-symbols/ERD-Notation.PNG)
+
+Tulis query di bawah sini:
+Table User:
+create table Users(
+	ID serial,
+	username varchar(25)
+);
+
+Table Artist:
+CREATE TABLE Artist(
+	ID serial,
+	name varchar(50)
+);
+
+Table Genre:
+CREATE TABLE Genre(
+	ID serial,
+	name varchar(50)
+);
+
+Table Album:
+CREATE TABLE Album(
+	ID serial,
+	Title varchar(250),
+	Genre_ID integer,
+	Song_ID integer,
+	Artist_ID integer
+);
+
+Table Song:
+CREATE TABLE Song(
+	ID serial,
+	Title varchar(250)
+	Genre_ID integer,
+	Artist_ID integer,
+	Album_ID integer
+);
+
+
+Table Penghubung:
+CREATE TABLE user_song(
+	ID serial,
+	Users_ID integer,
+	Song_ID integer
+);
+
+
+3. Melalui pgAdmin, sertakan screenshot seluruh tabel yang anda buat!
+Tulis url screenshot di bawah sini:
+https://drive.google.com/drive/folders/1QiQbAd672wx5uLZrthgL_9r1ublJ7ngF?usp=sharing
+
+
+4. Tuliskan query dari persoalan berikut:
+a. Saya ingin tahu seluruh daftar user.
+SELECT * FROM Users
+
+
+b. Saya ingin tahu seluruh daftar lagu beserta genrenya.
+SELECT song.title AS song_title, genre.name AS genre_name
+FROM song
+INNER JOIN genre 
+ON song.genre_id = genre.id
+
+
+c. Saya ingin tahu daftar seluruh album dari "Noah".
+SELECT album.title AS album_title, artis.name AS artist_name
+FROM album
+INNER JOIN artis
+ON album.artist_id = artis.id
+WHERE name = 'noah'
+
+
+d. Saya ingin tahu daftar seluruh lagu bergenre "Dangdut".
+SELECT song.title AS song_title, genre.name AS genre_name
+FROM song
+INNER JOIN genre
+ON song.genre_id = genre.id
+WHERE name = 'dangdut'
+
+
+e. Saya ingin tahu daftar seluruh genre yang dipilih oleh user dengan username fadhlanmakarim.
+SELECT users_song.users_id , users.username, song.title, genre.name AS genre
+FROM users_song
+INNER JOIN users
+ON users_song.users_id = users.id
+INNER JOIN song
+ON users_song.song_id = song.id
+INNER JOIN genre
+ON users_song.song_id = genre.id
+WHERE username = 'fadhlanmakarim'
